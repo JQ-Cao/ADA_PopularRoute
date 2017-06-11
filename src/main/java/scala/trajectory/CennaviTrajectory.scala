@@ -1,5 +1,6 @@
 package scala.trajectory
 import basic.MapUtil
+import model.GPS
 import org.apache.spark.rdd.RDD
 
 import scala.trajectory.`trait`.MakeTrajectory
@@ -13,19 +14,19 @@ object CennaviTrajectory extends MakeTrajectory{
     * @param rdd lng,lat,time,speed,direction,status,event
     * @return rdd[List[(lng,lat,time,speed,direction)] ]
     */
-  override def toTrajectory(rdd: RDD[String]): RDD[List[(Double, Double, Long, Int, Int)]] = {
+  override def toTrajectory(rdd: RDD[String]): RDD[List[GPS]] = {
     getLongTrajectory(rdd).flatMap{
       longTrajectory =>
-        var trajectoryList = List.empty[List[(Double,Double,Long,Int,Int)]]
-        var shortTrajectory = List.empty[(Double,Double,Long,Int,Int)]
+        var trajectoryList = List.empty[List[GPS]]
+        var shortTrajectory = List.empty[GPS]
         for(gps<-longTrajectory._2){
           //按照载客情况进行长轨迹切割
           if(gps._6==1){
-            shortTrajectory = (gps._1,gps._2,gps._3,gps._4,gps._5)::shortTrajectory
+            shortTrajectory = new GPS(gps._1,gps._2,gps._5,gps._3,gps._4)::shortTrajectory
           }else{
             if(shortTrajectory.nonEmpty)
               trajectoryList = shortTrajectory.reverse::trajectoryList
-            shortTrajectory = List.empty[(Double,Double,Long,Int,Int)]
+            shortTrajectory = List.empty[GPS]
           }
         }
         trajectoryList
@@ -81,10 +82,10 @@ object CennaviTrajectory extends MakeTrajectory{
     * @param trajectory List[(lng,lat,time,speed,direction)]
     * @return
     */
-  private def speedBetweenGPSCheck(trajectory: List[(Double,Double,Long,Int,Int)]):Boolean = {
+  private def speedBetweenGPSCheck(trajectory: List[GPS]):Boolean = {
     for(i<-1 until trajectory.length){
-      val dis = MapUtil.calPointDistance(trajectory(i-1)._1,trajectory(i-1)._2,trajectory(i)._1,trajectory(i)._2)
-      if(dis / trajectory(i)._3 - trajectory(i-1)._3 > 55)
+      val dis = MapUtil.calPointDistance(trajectory(i-1).getLongitude,trajectory(i-1).getLatitude,trajectory(i).getLongitude,trajectory(i).getLatitude)
+      if(dis / trajectory(i).getTime - trajectory(i-1).getTime > 55)
         return false
     }
     true
