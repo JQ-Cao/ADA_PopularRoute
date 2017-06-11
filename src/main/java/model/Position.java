@@ -16,13 +16,12 @@ public class Position {
     private Long time;
 
     /**
-     * TODO(功能描述)
+     *
      * @param gps
      * @param linkID
      * @return
      */
     public static Position getInstance(GPS gps, Long linkID) {
-        // TODO Auto-generated method stub
         Position pos = new Position();
         pos.linkID = linkID;
 
