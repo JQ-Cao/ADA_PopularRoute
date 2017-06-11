@@ -1,55 +1,101 @@
 package model;
 
+import basic.MapUtil;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+
+import java.io.Serializable;
+
 
 /**
- * Created by caojiaqing on 26/04/2017.
+ * 道路属性对象
  */
-public class Link extends LineSegment{
-    private long id;
+public class Link implements Serializable{
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    protected String id;
+    protected String snode;
+    protected String enode;
+    protected float width;//宽度，单位:米
+    protected float length;//长度，单位:米
+    protected int speedlimit;//速度，单位:km/h
+    protected int direction;
+    protected String roadclass;//道路等级R表Kind前两位
+    protected String roadtype;//道路属性R表Kind后两位
+    protected LineString geometry;
+    protected double azimuth;
 
-    public Link(long id, Coordinate start, Coordinate end) {
-        super(start, end);
+    public Link(String id, String snode, String enode, int direction, String roadclass, String roadtype,
+                float width, float length,int speedlimit,LineString geometry) {
         this.id = id;
+        this.snode = snode;
+        this.enode = enode;
+        this.width = width;
+        this.length = length;
+        this.speedlimit = speedlimit;
+        this.direction = direction;
+        this.roadclass = roadclass;
+        this.roadtype = roadtype;
+        this.geometry = geometry;
+
+        Coordinate coordinates[] = this.geometry.getCoordinates();
+        int size = coordinates.length - 1;
+        this.azimuth = MapUtil.azimuth(coordinates[size-1], coordinates[size]);
     }
 
-    public long getId() {
+    public double getAzimuth() {
+        return azimuth;
+    }
+
+    public void setAzimuth(double azimuth) {
+        this.azimuth = azimuth;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getSnode() {
+        return snode;
+    }
+
+    public String getEnode() {
+        return enode;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    public int getSpeedlimit() {
+        return speedlimit;
     }
 
 
-
-    public Coordinate getStart() {
-        return super.p0;
+    public int getDirection() {
+        return direction;
     }
 
-    public void setStart(Coordinate start) {
-        super.p0 = start;
+
+    public String getRoadtype() {
+        return roadtype;
     }
 
-    public Coordinate getEnd() {
-        return super.p1;
+    public String getRoadclass() {
+        return roadclass;
     }
 
-    public void setEnd(Coordinate end) {
-        super.p1 = end;
+    public LineString getGeometry() {
+        return geometry;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Link){
-            return ((Link)obj).getId() == this.getId();
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(id);
+    public boolean isEqual(Link link){
+        return link.getId()==id;
     }
 }
