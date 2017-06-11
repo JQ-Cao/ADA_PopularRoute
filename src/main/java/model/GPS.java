@@ -1,11 +1,10 @@
 package model;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import java.io.Serializable;
 
 /**
  * Created by caojiaqing on 11/06/2017.
+ * GPS采样点对象
  */
 public class GPS implements Serializable {
     private double longitude; // required
