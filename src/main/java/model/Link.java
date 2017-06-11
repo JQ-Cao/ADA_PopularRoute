@@ -21,6 +21,8 @@ public class Link implements Serializable{
     protected float width;//宽度，单位:米
     protected float length;//长度，单位:米
     protected int speedlimit;//速度，单位:km/h
+    //原link方向字段，0表示默认为双方向都可以通行；1表示双方向可以通行；2表示单向通行，通行方向为起点到终点方向；3表示单方向通行，通行方向为终点到起点方向。
+    // 但实际保存中该字段已无效，因为双向通行道路已经新生成一条反向路径（id加-1），而单向通行道路已经修改过点序方向
     protected int direction;
     protected String roadclass;//道路等级R表Kind前两位
     protected String roadtype;//道路属性R表Kind后两位
@@ -98,4 +100,5 @@ public class Link implements Serializable{
     public boolean isEqual(Link link){
         return link.getId()==id;
     }
+
 }
